@@ -1,0 +1,59 @@
+﻿@using System.Linq
+@using BookShop.Mvc.Controllers
+@using BookShop.Mvc.Models;
+@using Microsoft.AspNetCore.Routing
+@using Microsoft.EntityFrameworkCore.Internal
+@using Microsoft.Extensions.Configuration.CommandLine
+
+@model ShoppingCart
+
+@{
+    ViewBag.Title = "Shopping Cart";
+}
+
+<h2>Shopping Cart</h2>
+
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th><em>Title</em></th>
+            <th><em>Author</em></th>
+            <th><em>Quantity</em></th>
+            <th><em>Price</em></th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var orderLine in Model.Lines)
+        {
+            <tr>
+                <td class="title"><h4>@Html.ActionLink(orderLine.Book.Title, "Details", "Catalog", new { id = orderLine.Book.Id }, new { })</h4></td>
+                <td class="author">@orderLine.Book.Author</td>
+                <td>
+                    @using (Html.BeginForm("Edit", "ShoppingCart", FormMethod.Post))
+                    {
+
+                        @Html.Hidden("BookId", orderLine.BookId, new { })
+                        <input name="Quantity" type="number" value="@orderLine.Quantity" min="0" max="@int.MaxValue" required/>
+
+                        <button type="submit" class="btn btn-success">&#10003;</button>
+                    }
+                </td>
+                <td class="price">&euro; @orderLine.Price.ToString("0.00")</td>
+                <td>
+                    @Html.ActionLink("X", "DeleteItem", "ShoppingCart", new { id = orderLine.Book.Id }, new { @class = "btn btn-danger" })
+                </td>
+            </tr>
+        }
+        </tbody>
+        <tfoot>
+        <tr>
+            <th><h4><strong>Total</strong></h4></th>
+            <th></th>
+            <th class="shoppingcart_count">@Model.Count</th>
+            <th class="shoppingcart_total_amount">&euro; @Model.Price.ToString("0.00")</th>
+        </tr>
+        </tfoot>
+    </table>
+</div>
